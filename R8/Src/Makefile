@@ -116,6 +116,11 @@ all:
 	cc -o xval-prep xval-prep.c
 	cc -o average average.c -lm
 
+clean:
+	rm -rf *.o
+	rm c4.5
+
+
 
 $(trees): defns.i types.i extern.i
 $(rules): defns.i types.i extern.i
