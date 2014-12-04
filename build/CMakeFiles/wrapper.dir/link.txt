@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11    CMakeFiles/wrapper.dir/wrapper.cpp.o  -o wrapper -rdynamic 
