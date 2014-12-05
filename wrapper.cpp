@@ -9,6 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <set>
+#include <map>
 
 using namespace std;
 
@@ -37,11 +38,14 @@ struct Attribute {
 
 struct NameFile {
 	vector<Attribute> att;
+	set<string> result_values;
 };
 
 NameFile parse_name_file(string name) {
 	vector<string> lines = load_file(name);
 	NameFile file;
+	bool done_result = false;
+	
 	
 	for(auto &line : lines) {
 		string new_line;
@@ -67,8 +71,15 @@ NameFile parse_name_file(string name) {
 			while(line[pos] == ' ')
 				pos++;
 			
-			while(line[pos] != ':')
-				at_name += line[pos++];
+			while(line[pos] != ':') {
+				if(pos + 1 < line.length() && line[pos + 1] == ':' && line[pos] == ' ') {
+					pos++;
+					break;
+				}
+				else {
+					at_name += line[pos++];
+				}
+			}
 			
 			pos++;
 			
@@ -80,7 +91,7 @@ NameFile parse_name_file(string name) {
 			a.name = at_name;
 			a.continuous = false;
 			
-			while(line[pos] != '.') {
+			while(pos < line.length() && line[pos] != '.') {
 				while(line[pos] != ',' && line[pos] != '.') {
 					val_name += line[pos++];
 				}
@@ -104,6 +115,50 @@ NameFile parse_name_file(string name) {
 			}
 				
 			file.att.push_back(a);
+		}
+		else if(line != "") {
+			if(!done_result) {
+				bool non_white = false;
+				
+				for(int i = 0;i < line.size();i++) {
+					if(line[i] != ' ' && line[i] != '\t') {
+						non_white = true;
+						break;
+					}
+				}
+				
+				if(!non_white)
+					continue;
+				
+				int pos = 0;
+				string name = "";
+				
+				while(pos < line.length() && line[pos] == ' ')
+					pos++;
+				
+				while(pos < line.length()) {
+					if(line[pos] == ',') {
+						file.result_values.insert(name);
+						name = "";
+						
+						++pos;
+						
+						while(pos < line.length() && line[pos] == ' ')
+							pos++;
+					}
+					else if(line[pos] == '.') {
+						done_result = true;
+						++pos;
+					}
+					else {
+						name += line[pos++];
+					}
+				}
+				
+				if(name != "") {
+					file.result_values.insert(name);
+				}
+			}
 		}
 	}
 	
@@ -332,6 +387,203 @@ TreeData generate_tree(string file_name) {
 	return t;
 }
 
+
+// A training example
+struct Example {
+	map<string,string> data;
+	string result;
+	
+	bool setValue(string &name, string &value, set<string> &attribute_list);
+};
+
+// Stores a list of all of the open examples
+vector<Example> example_list;
+
+// Sets the value of an attribute in an examples
+bool Example::setValue(string &name, string &value, set<string> &attribute_list){
+	if(attribute_list.count(name) == 0){
+		cout << "Error: attempting to set an undeclared attribute" << endl;
+		return false;
+	}
+
+	//if(attribute_list[name].values.count(value) == 0){
+	//	return false;
+	//}
+
+	data[name] = value;
+	return true;
+}
+
+vector<Example> load_training_set(string file_name, TreeData &t) {
+	vector<string> lines = load_file(file_name);
+	vector<Example> examples;
+	
+	
+	for(int i = 0;i < lines.size();i++) {
+		if(lines[i] != "") {
+			int count = 0;
+			Example e;
+			int pos = 0;
+			string &line = lines[i];
+			string at_value;
+			
+			while(pos < line.length()) {
+				if(line[pos] == ',') {
+					e.data[t.name.att[count++].name] = at_value;
+					at_value = "";
+					
+					while(pos < line.length() && line[pos] != ',')
+						pos++;
+					
+					++pos;
+					
+					while(pos < line.length() && (line[pos] == ' ' || line[pos] == '\t'))
+						pos++;
+					
+					at_value = "";
+				}
+				else {
+					at_value += line[pos++];
+				}
+			}
+			
+			if(at_value != "") {
+				e.result = at_value;
+			}
+			
+			examples.push_back(e);
+		}
+	}
+	
+	return examples;
+}
+
+// Classifies a sample against the decision tree
+string classify_example(Example &e, Node *node){
+	if(node == NULL) return "";
+
+	string &attribute = node->attribute;
+	string &node_value = node->value;
+	string &result = node->result;
+
+	string &value = e.data[attribute];
+
+	
+	if(node->equal && value == node->value ||
+		node->less_than && atof(value.c_str()) < atof(node->value.c_str()) ||
+		node->greater_than && atof(value.c_str()) > atof(node->value.c_str())) {
+	
+		if(node->child == NULL) return result;
+		else return classify_example(e, node->child);
+		
+	}
+
+	return classify_example(e,node->next);
+}
+
+// Computes and prints the confusion matrix
+void print_confusion_matrix(TreeData &t, vector<Example> &example_list) {
+	int count[50][50];
+	
+	cout << "? = unclassified by tree" << endl << endl;
+
+	for(int i = 0;i < 50;i++){
+		for(int d = 0;d < 50;d++){
+			count[i][d] = 0;
+		}
+	}
+
+	map<string,int> m;
+
+	int max_length = 0;
+	set<string> &s = t.name.result_values;
+	
+	//attribute_list[format.decision].values;
+	int pos = 0;
+
+	vector<string> a_list;
+
+	for(set<string>::iterator i = s.begin();i != s.end();i++){
+		m[*i] = pos++;
+
+		if(i->length() > max_length){
+			max_length = i->length();
+		}
+		a_list.push_back(*i);
+	}
+	
+	m["?"] = pos++;
+	
+	a_list.push_back("?");
+
+	cout << "List of attributes:" << endl;
+	for(int i = 0;i < a_list.size();i++) {
+		cout << (a_list[i])[0] << "[" << i << "] -> " << a_list[i] << endl;
+	}
+	
+	int right = 0;
+	int total = 0;
+	
+	for(int i = 0;i < example_list.size();i++){
+		string res = classify_example(example_list[i], tree);
+		
+		if(res == "")
+			res = "?";
+		
+		int p = m[res];
+		int a = m[example_list[i].result];
+
+		count[p][a]++;
+		
+		if(p == a)
+			right++;
+		
+		total++;
+	}
+
+	cout << "\tPredicted" << endl << endl << "\t\t ";
+
+	for(int d = 0;d < a_list.size();d++){
+		cout << (a_list[d])[0] << "[" << d << "]" << "\t";
+	}
+
+	cout << endl << "\t\t";
+
+	for(int d = 0;d < a_list.size();d++){
+		cout << "--------";
+	}
+
+	cout << endl;
+
+	pos = 0;
+
+	string actual = "Actual";
+
+	for(int i = 0;i < a_list.size() - 1;i++){
+		if(pos < actual.length())
+			cout << actual[pos++] << "\t";
+		else
+			cout << "\t";
+		
+		
+		string length = to_string(a_list.size() - 1);
+		string width = to_string(length.length());
+		
+		string format = "%c[%" + width + "d]|\t";
+		
+		printf(format.c_str(), (a_list[i])[0], i);
+
+		for(int d = 0;d < a_list.size();d++){
+			cout << count[d][i] << "\t";
+		}
+		cout << endl;
+	}
+
+	while(pos < actual.length()) cout << actual[pos++] << endl;
+	
+	cout << endl << "Accuracy: " << (right * 100) / total << "%" << endl;
+}
+
 void print_tree(Node *n, int indent) {
 	if(n == NULL) return;
 	
@@ -384,6 +636,8 @@ struct Node{
 
 int main(int argc, char *argv[]) {
 	TreeData data = generate_tree((string)argv[1]);
+	string training_name = (string)argv[1] + ".data";
+	vector<Example> examples = load_training_set(training_name, data);
 	
 	for(auto i : data.name.att) {
 		cout << "'" << i.name << "'" << endl;
@@ -402,18 +656,31 @@ int main(int argc, char *argv[]) {
 	
 	print_tree(tree, 0);
 	
+	cout << "=========Training data=========" << endl;
+	
+	int count = 0;
+	
+	for(Example e : examples) {
+		cout << "Example " << count++ << " -> " << e.result << endl;
+		
+		for(auto i : e.data) {
+			cout << "\t" << i.first << " -> " << i.second << endl;
+		}
+	}
+	
+	cout << "=========Possible Result Values=========" << endl;
+	
+	for(string i : data.name.result_values) {
+		cout << i << endl;
+	}
+	
+	cout << "=========Confusion Matrix=========" << endl;
+
+	print_confusion_matrix(data, examples);
 	
 	
 	return 0;
 }
-
-
-// A training example
-struct Example {
-	map<string,string> data;
-
-	bool setValue(string &name, string &value);
-};
 
 
 
