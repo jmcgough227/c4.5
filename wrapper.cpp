@@ -408,7 +408,12 @@ int main(int argc, char *argv[]) {
 }
 
 
+// A training example
+struct Example {
+	map<string,string> data;
 
+	bool setValue(string &name, string &value);
+};
 
 
 
