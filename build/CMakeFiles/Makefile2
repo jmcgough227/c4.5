@@ -43,14 +43,14 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/bin/ccmake
+# Escaping for special characters.
+EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ugrad/jrm43/Documents/Code/c4.5
+CMAKE_SOURCE_DIR = /home/michael/code/c4.5
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ugrad/jrm43/Documents/Code/c4.5/build
+CMAKE_BINARY_DIR = /home/michael/code/c4.5/build
 
 #=============================================================================
 # Target rules for target CMakeFiles/wrapper.dir
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/ugrad/jrm43/Documents/Code/c4.5/build
 CMakeFiles/wrapper.dir/all:
 	$(MAKE) -f CMakeFiles/wrapper.dir/build.make CMakeFiles/wrapper.dir/depend
 	$(MAKE) -f CMakeFiles/wrapper.dir/build.make CMakeFiles/wrapper.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ugrad/jrm43/Documents/Code/c4.5/build/CMakeFiles  1
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/michael/code/c4.5/build/CMakeFiles  1
 	@echo "Built target wrapper"
 .PHONY : CMakeFiles/wrapper.dir/all
 
@@ -69,9 +69,9 @@ all: CMakeFiles/wrapper.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/wrapper.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ugrad/jrm43/Documents/Code/c4.5/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/michael/code/c4.5/build/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/wrapper.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ugrad/jrm43/Documents/Code/c4.5/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/michael/code/c4.5/build/CMakeFiles 0
 .PHONY : CMakeFiles/wrapper.dir/rule
 
 # Convenience name for target.

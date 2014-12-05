@@ -6,9 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/home/ugrad/jrm43/Documents/Code/c4.5/wrapper.cpp
+/home/michael/code/c4.5/wrapper.cpp
 iostream
 -
 string
+-
+vector
+-
+fstream
+-
+set
 -
 

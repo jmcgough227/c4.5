@@ -31,14 +31,14 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/bin/ccmake
+# Escaping for special characters.
+EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ugrad/jrm43/Documents/Code/c4.5
+CMAKE_SOURCE_DIR = /home/michael/code/c4.5
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ugrad/jrm43/Documents/Code/c4.5/build
+CMAKE_BINARY_DIR = /home/michael/code/c4.5/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/wrapper.dir/depend.make
@@ -51,17 +51,17 @@ include CMakeFiles/wrapper.dir/flags.make
 
 CMakeFiles/wrapper.dir/wrapper.cpp.o: CMakeFiles/wrapper.dir/flags.make
 CMakeFiles/wrapper.dir/wrapper.cpp.o: ../wrapper.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ugrad/jrm43/Documents/Code/c4.5/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/michael/code/c4.5/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/wrapper.dir/wrapper.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/wrapper.dir/wrapper.cpp.o -c /home/ugrad/jrm43/Documents/Code/c4.5/wrapper.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/wrapper.dir/wrapper.cpp.o -c /home/michael/code/c4.5/wrapper.cpp
 
 CMakeFiles/wrapper.dir/wrapper.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/wrapper.dir/wrapper.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/ugrad/jrm43/Documents/Code/c4.5/wrapper.cpp > CMakeFiles/wrapper.dir/wrapper.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/michael/code/c4.5/wrapper.cpp > CMakeFiles/wrapper.dir/wrapper.cpp.i
 
 CMakeFiles/wrapper.dir/wrapper.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/wrapper.dir/wrapper.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/ugrad/jrm43/Documents/Code/c4.5/wrapper.cpp -o CMakeFiles/wrapper.dir/wrapper.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/michael/code/c4.5/wrapper.cpp -o CMakeFiles/wrapper.dir/wrapper.cpp.s
 
 CMakeFiles/wrapper.dir/wrapper.cpp.o.requires:
 .PHONY : CMakeFiles/wrapper.dir/wrapper.cpp.o.requires
@@ -97,6 +97,6 @@ CMakeFiles/wrapper.dir/clean:
 .PHONY : CMakeFiles/wrapper.dir/clean
 
 CMakeFiles/wrapper.dir/depend:
-	cd /home/ugrad/jrm43/Documents/Code/c4.5/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ugrad/jrm43/Documents/Code/c4.5 /home/ugrad/jrm43/Documents/Code/c4.5 /home/ugrad/jrm43/Documents/Code/c4.5/build /home/ugrad/jrm43/Documents/Code/c4.5/build /home/ugrad/jrm43/Documents/Code/c4.5/build/CMakeFiles/wrapper.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/michael/code/c4.5/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/michael/code/c4.5 /home/michael/code/c4.5 /home/michael/code/c4.5/build /home/michael/code/c4.5/build /home/michael/code/c4.5/build/CMakeFiles/wrapper.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/wrapper.dir/depend
 
