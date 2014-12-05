@@ -207,7 +207,7 @@ Node *tree;
 void get_line_info(string &line,int &count,string &attribute,string &value,bool &has_child,
 				   string &res, bool &less_than, bool &greater_than, bool &equal_to) {
 	
-	cout << "Line: " << line << endl;
+	cout << line << endl;
 	count = 0;
 	int pos = 0;
 
@@ -374,9 +374,6 @@ TreeData generate_tree(string file_name) {
 		throw -1;
 	}
 	
-	cout << "Start: " << start << endl;
-	cout << "End: " << end << endl;
-	
 	for(int i = start;i < end;i++) {
 		if(lines_before[i] != "")
 			lines.push_back(lines_before[i]);
@@ -396,15 +393,12 @@ struct Example {
 	bool setValue(string &name, string &value, set<string> &attribute_list);
 };
 
-// Stores a list of all of the open examples
-vector<Example> example_list;
-
 // Sets the value of an attribute in an examples
 bool Example::setValue(string &name, string &value, set<string> &attribute_list){
-	if(attribute_list.count(name) == 0){
-		cout << "Error: attempting to set an undeclared attribute" << endl;
-		return false;
-	}
+//	if(attribute_list.count(name) == 0){
+//		cout << "Error: attempting to set an undeclared attribute" << endl;
+//		return false;
+//	}
 
 	//if(attribute_list[name].values.count(value) == 0){
 	//	return false;
@@ -608,7 +602,38 @@ void print_tree(Node *n, int indent) {
 		n = n->next;
 	}
 }
+
+// Displays a menu that allows the user to select an option
+int show_menu(string title, string data, string prompt){
+    cout << title << endl << endl;
+    int pos = 1;
+    
+    cout << "1. ";
+    
+    for(int i = 0;i<data.length();i++){
+        if(data[i] != '|'){
+            cout << data[i];
+        }
+        else{
+            cout << endl << ++pos << ". ";
+        }
+    }
+    
+    cout << endl << endl;
 	
+    int value;
+    
+    do{
+		cout << prompt << ": ";
+		string line;
+		getline(cin, line);
+		value = atoi(line.c_str());
+    } while(value <= 0 || value >= pos+1);
+    
+    cout << endl;
+    
+    return value - 1;
+}
 	
 #if 0
 struct Node{
@@ -634,6 +659,7 @@ struct Node{
 	}
 #endif
 
+#if 0
 int main(int argc, char *argv[]) {
 	TreeData data = generate_tree((string)argv[1]);
 	string training_name = (string)argv[1] + ".data";
@@ -681,7 +707,138 @@ int main(int argc, char *argv[]) {
 	
 	return 0;
 }
+#endif
 
+// Has the user eneter attributes to classify an object
+Example get_example(TreeData &t) {
+	Example e;
+
+	for(auto i : t.name.att) {
+		
+		do{
+			cout << i.name << ": ";
+			string s;
+
+			getline(cin, s);
+			
+			if(i.values.count(s) != 0 || i.continuous) {
+				e.setValue(i.name, s, i.values);
+				break;
+			}
+			else{
+				cout << "Invalid value for attribute" << endl << endl;
+				
+				if(i.continuous) {
+					cout << "This attribute is continuous" << endl;
+				}
+				else {
+					cout << "Valid values:" << endl;
+					
+					for(auto d : i.values) {
+						cout << "\t" << d << endl;
+					}
+					
+					cout << endl;
+				}
+			}
+		} while(1);
+	}
+
+	return e;
+}
+
+int main(int argc, char *argv[]) {
+	bool tree_built = false;
+	TreeData data;
+	vector<Example> examples;
+	string file;
+	
+	tree = NULL;
+	
+	do{
+		int choice = show_menu("Select an option",
+			"Build tree|"
+			"Calculate confusion matrix|"
+			"Interactively test cases|"
+			"Quit","Option");
+
+
+		if(choice == 0){
+			lines.clear();
+			
+			if(tree) delete tree;
+			tree = NULL;
+
+			string attribute_file;
+			string training_file;
+
+			bool success = false;
+			
+			cout << "Enter the dataset file (without extension): ";
+			getline(cin, file);
+
+			try {
+				
+				data = generate_tree(file);
+				string training_name = file + ".data";
+				examples = load_training_set(training_name, data);
+				tree_built = true;
+			}
+			catch(int val) { }
+		}
+		else if(choice == 1){
+			if(tree_built){
+				try {
+					cout << "Enter the dataset file (without extension): ";
+					getline(cin, file);
+					string training_name = file + ".data";
+					examples = load_training_set(training_name, data);
+					print_confusion_matrix(data, examples);
+				}
+				catch(int val) { }
+			}
+			else{
+				cout << "Please build a tree first" << endl;
+			}
+		}
+		else if(choice == 2){
+			if(tree_built){
+				cout << "Please enter the values for the following attributes:" << endl << endl;
+
+				do{
+					Example e = get_example(data);
+					string c = classify_example(e,tree);
+
+					if(c == ""){
+						cout << "No objects match this description" << endl;
+					}
+					else{
+						cout << endl << "Identified object: " << c << endl << endl;
+					}
+
+					int new_choice = show_menu("Would you like to enter another description?",
+						"Yes|"
+						"No; quit","Choice");
+
+					if(new_choice == 1) break;
+				} while(1);
+			}
+			else{
+				cout << "Please build a tree first" << endl;
+			}
+		}
+		else if(choice == 3){
+			break;
+		}
+
+		cout << endl;
+
+	} while(1);
+
+	if(tree) delete tree;
+
+	return 0;
+}
 
 
 
